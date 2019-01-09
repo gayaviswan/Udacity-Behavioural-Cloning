@@ -11,6 +11,7 @@ import eventlet.wsgi
 from PIL import Image
 from flask import Flask
 from io import BytesIO
+import cv2
 
 from keras.models import load_model
 import h5py
@@ -20,6 +21,16 @@ sio = socketio.Server()
 app = Flask(__name__)
 model = None
 prev_image_array = None
+
+def image_resize(img, imgsize=(64, 64)):
+    new_image = cv2.resize(img, imgsize)
+    return new_image
+
+def crop(image, top_percent, bottom_percent):
+    top = int(np.ceil(image.shape[0] * top_percent))
+    bottom = image.shape[0] - int(np.ceil(image.shape[0] * bottom_percent))
+    return image[top:bottom, :]
+
 
 
 class SimplePIController:
@@ -44,7 +55,7 @@ class SimplePIController:
 
 
 controller = SimplePIController(0.1, 0.002)
-set_speed = 9
+set_speed = 15
 controller.set_desired(set_speed)
 
 
@@ -61,6 +72,12 @@ def telemetry(sid, data):
         imgString = data["image"]
         image = Image.open(BytesIO(base64.b64decode(imgString)))
         image_array = np.asarray(image)
+        #image_array = crop(image_array, 0.35, 0.12)
+        top = int(np.ceil(image_array.shape[0] * 0.35))
+        bottom = image_array.shape[0] - int(np.ceil(image_array.shape[0] * 0.12))
+        image_array = image_array[top:bottom, :]
+        image_array = cv2.resize(image_array, (64,64))
+        #image_array = image_resize(image_array, imgsize=(64, 64))
         steering_angle = float(model.predict(image_array[None, :, :, :], batch_size=1))
 
         throttle = controller.update(float(speed))

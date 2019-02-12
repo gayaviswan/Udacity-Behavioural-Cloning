@@ -55,8 +55,7 @@ The model.py file contains the code for training and saving the convolution neur
 #### 1. An appropriate model architecture has been employed
 
 My model consists of a convolution neural network of 9 layers, including a normalization layer, 5 convolutional layers
-and 3 fully connected layers (model.py lines 92-122). The convolutional layers were designed to perform feature extraction. NVDIA net uses strided convolutions in the first three convolutional layers with a 2×2 stride and a 5×5 kernel and a non-strided convolution
-with a 3×3 kernel size in the last two convolutional layers. 
+and 3 fully connected layers (model.py lines 92-122). The convolutional layers were designed to perform feature extraction. NVDIA network uses strided convolutions in the first three convolutional layers with a 2×2 stride and a 5×5 kernel and a non-strided convolution with a 3×3 kernel size in the last two convolutional layers. 
 
 The model includes RELU layers to introduce nonlinearity (code line 94), and the data is normalized in the model using a Keras lambda layer (code line 92). The convolution layers follows 3 fully connected layer. Dropouts are introduced in the fully connected layer.
 
@@ -81,7 +80,7 @@ The overall strategy for deriving a model architecture was to use the NVDIA end 
 
 My first step was to use a convolution neural network model similar to the Lenet.  However i found the car was going off-trace. So i moved to NVIDIA model and that stopped the vehicle going off the track. 
 
-I also tried adding dropout layer of 50% and noticed the loss was not reducing as much. There was big gap between valdiation and training loss. Hoever once i changed the dropout to about 10%, the gap between validation and training loss reduced. The car started riving more on the center of the road.
+I tried adding dropout layer of 50% and noticed the loss was not reducing as much. There was big gap between valdiation and training loss. However once i changed the dropout to about 10%, the gap between validation and training loss reduced. The car started driving more on the center of the road.
 
 At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
 
@@ -103,14 +102,14 @@ I then recorded the vehicle recovering from the left side and right sides of the
 
 ![Right Image](./IMG/right_img.jpg)
 ![Left Image](./IMG/left_img.jpg)
-![Center Image][./IMG/center_driving.png]
+![Center Image](./IMG/center_driving.png)
 
-To augment the data sat, I also flipped images and angles thinking that this would allow the model to learn not to only consider left turn but also right turns. For example, here is an image that has then been flipped:
+To augment the data sat, I also flipped images and angles thinking that this would allow the model to not have a left-turn bias. For example, here is an image that has then been flipped:
 
 ![Before Flip](./IMG/before_flip.jpg)
 ![After Flip](./IMG/flip.png)
 
-After the collection process, I had 12855 number of data points. I then preprocessed this data by first cropping the top and bottom of the image to remove unnessary parts of the image, flipping the image randomely followed by resizing the image to 64x64. 
+After the collection process, I had 12855 number of data points. I then preprocessed this data by first cropping the top and bottom of the image to remove unnessary parts of the image followed by resizing the image to 64x64. 
 
 I finally randomly shuffled the data set and put 20% of the data into a validation set. 
 

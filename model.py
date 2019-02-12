@@ -29,7 +29,9 @@ def flip(image, steering_angle):
 
         
 """
-Generator that continuously generates batches of image
+Generator that continuously generates batches of image randomly from left,
+right and center.
+Preprocess the image by cropping from top and bottom, flipping and resizing it.
 """
 def generator(batch_size=64):
     while True: # Loop forever so the generator never terminates
@@ -42,6 +44,7 @@ def generator(batch_size=64):
         indices = np.random.randint(0, num_img, batch_size)
         batch_images = []
         for index in indices:
+            # Randomly pick either the center, left or right image
             rnd_image = np.random.randint(0, 3)
             if rnd_image == 1:
                 img = data.iloc[index]['center'].strip()
@@ -60,11 +63,12 @@ def generator(batch_size=64):
             unproc_img = plt.imread(name)
             unproc_ang = angle
             new_image = unproc_img
+            # crop the image - top and bottom
             top = int(np.ceil(new_image.shape[0] * 0.35))
             bottom = new_image.shape[0] - int(np.ceil(new_image.shape[0] * 0.12))
             new_image = new_image[top:bottom, :]
+            # ramdomly flip the image
             rnd_flip = np.random.randint(0, 2)
-            #rnd_flip = 1
             if rnd_flip == 1:
                 new_image, new_angle = new_image, unproc_ang
             else:
@@ -88,8 +92,9 @@ from keras.optimizers import Adam
 # use NVIDIA pipeline
 model = Sequential()
 
-
+# Image Normalization
 model.add(Lambda(lambda x: x / 255 - 0.5, input_shape=(64, 64, 3)))
+# 5 Convolution layer
 model.add(Convolution2D(24, 5, 5, border_mode='same', subsample=(2, 2)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
@@ -107,6 +112,7 @@ model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
 model.add(Flatten())
 
+# Fully Connected layer
 model.add(Dense(1164))
 model.add(Activation('relu'))
 model.add(Dropout(0.1))
